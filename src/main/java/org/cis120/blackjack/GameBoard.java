@@ -33,8 +33,8 @@ public class GameBoard extends JPanel {
     private JLabel status; // current status text
 
     // Game constants
-    public static final int BOARD_WIDTH = 300;
-    public static final int BOARD_HEIGHT = 300;
+    public static final int BOARD_WIDTH = 1600;
+    public static final int BOARD_HEIGHT = 1000;
 
     /**
      * Initializes the game board.
@@ -47,7 +47,7 @@ public class GameBoard extends JPanel {
         // keyboard focus, key events are handled by its key listener.
         setFocusable(true);
 
-        ttt = new Blackjack(); // initializes model for the game
+        ttt = new Blackjack(3); // initializes model for the game
         status = statusInit; // initializes the status JLabel
 
         /*
@@ -60,7 +60,8 @@ public class GameBoard extends JPanel {
                 Point p = e.getPoint();
 
                 // updates the model given the coordinates of the mouseclick
-                ttt.playTurn(p.x / 100, p.y / 100);
+//                ttt.playTurn(p.x / 100, p.y / 100);
+
 
                 updateStatus(); // updates the status JLabel
                 repaint(); // repaints the game board
@@ -72,7 +73,7 @@ public class GameBoard extends JPanel {
      * (Re-)sets the game to its initial state.
      */
     public void reset() {
-        ttt.reset();
+        ttt.reset(ttt.getNumPlayers());
         status.setText("Player 1's Turn");
         repaint();
 
@@ -84,13 +85,9 @@ public class GameBoard extends JPanel {
      * Updates the JLabel to reflect the current state of the game.
      */
     private void updateStatus() {
-        if (ttt.getCurrentPlayer()) {
-            status.setText("Player 1's Turn");
-        } else {
-            status.setText("Player 2's Turn");
-        }
+        status.setText(String.format("Player %d's Turn", ttt.getCurrentPlayer()));
 
-        int winner = ttt.checkWinner();
+        int winner = 1;
         if (winner == 1) {
             status.setText("Player 1 wins!!!");
         } else if (winner == 2) {
@@ -123,7 +120,7 @@ public class GameBoard extends JPanel {
         // Draws X's and O's
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                int state = ttt.getCell(j, i);
+                int state = 1;
                 if (state == 1) {
                     g.drawOval(30 + 100 * j, 30 + 100 * i, 40, 40);
                 } else if (state == 2) {

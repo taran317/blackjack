@@ -32,6 +32,7 @@ public class Blackjack {
     private int[] bets;
     private int[] money;
     private int numPlayers;
+    private int currPlayer;
     private boolean gameOver;
     private List<Card> deck;
 
@@ -52,6 +53,7 @@ public class Blackjack {
     public void reset(int players) {
         board = new Ranks[15][players + 1];
         bets = new int[players];
+        currPlayer = 0;
         numPlayers = players;
         gameOver = false;
         deck = new ArrayList<>();
@@ -73,7 +75,7 @@ public class Blackjack {
         money[player] -= amount;
     }
 
-    public int calculateTotal(int player) {
+    private int calculateTotal(int player) {
         int aces = 0;
         int total = 0;
         for (int i = 0; i < board.length; i++) {
@@ -142,11 +144,15 @@ public class Blackjack {
         }
     }
 
-    public Ranks pop() {
+    private Ranks pop() {
         Ranks r = null;
         r = deck.get(0).getRank();
         deck.remove(0);
         return r;
+    }
+
+    public int getNumPlayers() {
+        return numPlayers;
     }
 
     /**
@@ -167,16 +173,21 @@ public class Blackjack {
         board[newCardIndex + 1][player] = pop();
         if (calculateTotal(player) > 21) {
             bust(player);
+            currPlayer++;
             return true;
         }
         return false;
     }
 
-    public void bust(int player) {
+    public void stay(int player) {
+        currPlayer++;
+    }
+
+    private void bust(int player) {
         board[0][player] = 0;
     }
 
-    public int calculateDealerTotal() {
+    private int calculateDealerTotal() {
         while (calculateTotal(0) <= 16) {
             if (hit(0)) {
                 break;
@@ -198,6 +209,14 @@ public class Blackjack {
                 }
             }
         }
+    }
+
+    public int getCurrentPlayer() {
+        return currPlayer+1;
+    }
+
+    public boolean getGameOver() {
+        return currPlayer > numPlayers;
     }
 
     /**
