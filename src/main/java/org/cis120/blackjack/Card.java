@@ -1,19 +1,16 @@
 package org.cis120.blackjack;
 
 public class Card {
-
-    public enum Suits {
-        SPADES,
-        HEARTS,
-        DIAMONDS,
-        CLUBS;
-    }
-
     private Suits suit;
-    private int rank;
+    private Ranks rank;
 
-    public Card(Suits suit, int rank) {
+    public Card(Suits suit, Ranks rank) {
         this.suit = suit;
         this.rank = rank;
+    }
+
+    public Ranks getRank()
+    {
+        return rank;
     }
 }
