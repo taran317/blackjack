@@ -31,6 +31,7 @@ public class RunBlackjack implements Runnable {
 
         // Top-level frame in which game components live
         final JFrame frame = new JFrame("Blackjack");
+        frame.getContentPane().setBackground(Color.YELLOW);
         frame.setLocation(1700, 1000);
 
         // Status panel

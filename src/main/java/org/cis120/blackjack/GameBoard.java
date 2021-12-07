@@ -51,7 +51,7 @@ public class GameBoard extends JPanel {
         // keyboard focus, key events are handled by its key listener.
         setFocusable(true);
 
-        ttt = new Blackjack(6); // initializes model for the game
+        ttt = new Blackjack(3); // initializes model for the game
         status = statusInit; // initializes the status JLabel
 
         /*
@@ -119,13 +119,18 @@ public class GameBoard extends JPanel {
         System.out.println("NEW CYCLE");
         super.paintComponent(g);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
+        g.drawString("Dealer", 700, 540);
         // Draws board grid
         g.drawLine(0, 500, BOARD_WIDTH, 500);
         int num = ttt.getNumPlayers();
         int playerWidth = BOARD_WIDTH / num;
+        System.out.println("dealer's total: " + ttt.calculateTotal(0));
         for (int player = 1; player <= num; player++) {
             int x = playerWidth / 2 - 85 + playerWidth * (player - 1);
             g.drawString("Player " + player, x, 50);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+            g.drawString("Money: " + ttt.getMoney(player), x+10, 80);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
             g.drawLine(playerWidth * player, 0, playerWidth * player, 500);
             int y = 90;
             System.out.println(player + ": " + ttt.getCards(player).size() + "total: " + ttt.calculateTotal(player));
@@ -140,13 +145,13 @@ public class GameBoard extends JPanel {
                 left = !left;
             }
         }
-        int x = 300;
-        int y = 530;
+        int x = 475;
+        int y = 545;
         for (Card c : ttt.getCards(0)) {
             paintDealerCard(g, c, x, y);
             x += 120;
         }
-        g.drawString("Dealer", 700, 540);
+
 
     }
 
