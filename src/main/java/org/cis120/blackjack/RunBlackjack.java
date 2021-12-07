@@ -52,7 +52,7 @@ public class RunBlackjack implements Runnable {
         // define it as an anonymous inner class that is an instance of
         // ActionListener with its actionPerformed() method overridden. When the
         // button is pressed, actionPerformed() will be called.
-        final JButton reset = new JButton("Reset");
+        final JButton reset = new JButton("Next Round");
         reset.addActionListener(e -> board.reset());
         control_panel.add(reset);
 
@@ -60,9 +60,9 @@ public class RunBlackjack implements Runnable {
         hit.addActionListener(e -> board.hit());
         control_panel.add(hit);
 
-        final JButton stay = new JButton("Stay");
-        stay.addActionListener(e -> board.stay());
-        control_panel.add(stay);
+        final JButton stand = new JButton("Stand");
+        stand.addActionListener(e -> board.stand());
+        control_panel.add(stand);
 
         // Put the frame on the screen
         frame.pack();

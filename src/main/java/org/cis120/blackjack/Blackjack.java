@@ -67,7 +67,8 @@ public class Blackjack {
             }
         }
         Collections.shuffle(deck);
-        for (int i = 0; i < board[0].length; i++) {
+        board[0][0] = pop();
+        for (int i = 1; i < board[0].length; i++) {
             board[0][i] = pop();
             board[1][i] = pop();
         }
@@ -197,7 +198,13 @@ public class Blackjack {
         return false;
     }
 
-    public void stay(int player) {
+    public void stand() {
+        if (currPlayer == numPlayers) {
+            gameOver = true;
+            System.out.println("HEEEEREEEEEEEEEE");
+            calculateDealerTotal();
+            settle();
+        }
         nextTurn();
     }
 
@@ -205,20 +212,27 @@ public class Blackjack {
         bust[player] = true;
     }
 
-    public void settle() {
+    public int[] settle() {
         System.out.println("IN SETTLE");
+        gameOver = true;
+        int[] output = new int[numPlayers];
         for (int player = 0; player < numPlayers; player++) {
             if (isBust(0) && !isBust(player)) {
                 money[player] += 2 * bets[player];
+                output[player] = 2;
             } else {
                 int dealerTotal = calculateDealerTotal();
                 if (calculateTotal(player) > dealerTotal && !isBust(player)) {
                     money[player] += 2 * bets[player];
+                    output[player] = 2;
                 } else if (calculateTotal(player) == dealerTotal && !isBust(player)) {
                     money[player] += bets[player];
+                    output[player] = 1;
                 }
             }
+            output[player] = 0;
         }
+        return output;
     }
 
     public int getCurrentPlayer() {
@@ -227,12 +241,18 @@ public class Blackjack {
 
     public void nextTurn() {
         if (currPlayer + 1 < numPlayers) {
+            System.out.println("curr players " + currPlayer);
+            System.out.println("total # of players " + numPlayers);
             currPlayer++;
-        } else {
-            System.out.println("NEXT TURN!");
+        } else if (!gameOver) {
+            System.out.println("SETTLING");
+            gameOver = true;
             calculateDealerTotal();
-            settle();
         }
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     public int getMoney(int player) {
@@ -240,7 +260,7 @@ public class Blackjack {
     }
 
     public List<Card> getCards(int player) {
-        List<Card> c = new ArrayList<Card>();
+        List<Card> c = new ArrayList<>();
         for (int i = 0; i < board.length; i++) {
             if (board[i][player] != null) {
                 c.add(board[i][player]);
