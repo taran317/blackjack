@@ -55,6 +55,14 @@ public class RunBlackjack implements Runnable {
         reset.addActionListener(e -> board.reset());
         control_panel.add(reset);
 
+        final JButton hit = new JButton("Hit");
+        hit.addActionListener(e -> board.hit());
+        control_panel.add(hit);
+
+        final JButton stay = new JButton("Stay");
+        stay.addActionListener(e -> board.stay());
+        control_panel.add(stay);
+
         // Put the frame on the screen
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

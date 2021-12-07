@@ -1,7 +1,5 @@
 package org.cis120;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 public class Game {

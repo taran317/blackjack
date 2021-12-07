@@ -28,13 +28,14 @@ import java.util.List;
  * visualized with Strings printed to the console.
  */
 public class Blackjack {
-    private Object[][] board;
+    private Card[][] board;
     private int[] bets;
     private int[] money;
     private int numPlayers;
     private int currPlayer;
     private boolean gameOver;
     private List<Card> deck;
+    private boolean[] bust;
 
     /**
      * Constructor sets up game state.
@@ -51,8 +52,9 @@ public class Blackjack {
      * reset (re-)sets the game state to start a new game.
      */
     public void reset(int players) {
-        board = new Ranks[15][players + 1];
+        board = new Card[10][players + 1];
         bets = new int[players];
+        bust = new boolean[players + 1];
         currPlayer = 0;
         numPlayers = players;
         gameOver = false;
@@ -75,12 +77,15 @@ public class Blackjack {
         money[player] -= amount;
     }
 
-    private int calculateTotal(int player) {
+    public int calculateTotal(int player) {
         int aces = 0;
         int total = 0;
+        if(isGameOver()) {
+            return -1;
+        }
         for (int i = 0; i < board.length; i++) {
-            if (!board[i][player].equals(0) && board[i][player] != null) {
-                switch ((Ranks) board[i][player]) {
+            if (board[i][player] != null) {
+                switch (board[i][player].getRank()) {
                     case TWO:
                         total += 2;
                         break;
@@ -126,6 +131,19 @@ public class Blackjack {
         return total;
     }
 
+    public boolean isBust(int player) {
+        return bust[player];
+    }
+
+    private int calculateDealerTotal() {
+        while (calculateTotal(0) <= 16) {
+            if (hit(0)) {
+                break;
+            }
+        }
+        return calculateTotal(0);
+    }
+
     /**
      * printGameState prints the current game state
      * for debugging.
@@ -144,9 +162,9 @@ public class Blackjack {
         }
     }
 
-    private Ranks pop() {
-        Ranks r = null;
-        r = deck.get(0).getRank();
+    private Card pop() {
+        Card r = null;
+        r = deck.get(0);
         deck.remove(0);
         return r;
     }
@@ -160,51 +178,49 @@ public class Blackjack {
      * @return true if player bust or got a blackjack (turn ended)
      */
     public boolean hit(int player) {
-        int newCardIndex = 0;
-        if(calculateTotal(player) == 21) {
-            return true;
-        }
-        for (int i = 0; i < board.length; i++) {
-            if (board[i][player] == null) {
-                newCardIndex = i;
-                break;
+        if(!isGameOver()) {
+            int newCardIndex = 0;
+            if (calculateTotal(player) >= 21) {
+                nextTurn();
+                return true;
             }
+            for (int i = 0; i < board.length; i++) {
+                if (board[i][player] == null) {
+                    newCardIndex = i;
+                    break;
+                }
+            }
+            board[newCardIndex][player] = pop();
+            if (calculateTotal(player) > 21) {
+                bust(player);
+                nextTurn();
+                return true;
+            }
+            return false;
         }
-        board[newCardIndex + 1][player] = pop();
-        if (calculateTotal(player) > 21) {
-            bust(player);
-            currPlayer++;
-            return true;
-        }
-        return false;
+        return true;
     }
 
     public void stay(int player) {
-        currPlayer++;
+        if(!isGameOver()) {
+            nextTurn();
+        }
     }
 
     private void bust(int player) {
-        board[0][player] = 0;
-    }
-
-    private int calculateDealerTotal() {
-        while (calculateTotal(0) <= 16) {
-            if (hit(0)) {
-                break;
-            }
-        }
-        return calculateTotal(0);
+        bust[player] = true;
     }
 
     public void settle() {
         for (int player = 1; player <= numPlayers; player++) {
-            if (board[0][0].equals(0) && !board[0][player].equals(0)) {
+            if (isBust(0) && !isBust(player)) {
                 money[player] += 2 * bets[player];
-            } else {
+            }
+            else {
                 int dealerTotal = calculateDealerTotal();
-                if (calculateTotal(player) > dealerTotal) {
+                if (calculateTotal(player) > dealerTotal && !isBust(player)) {
                     money[player] += 2 * bets[player];
-                } else if (calculateTotal(player) == dealerTotal) {
+                } else if (calculateTotal(player) == dealerTotal && !isBust(player)) {
                     money[player] += bets[player];
                 }
             }
@@ -215,8 +231,24 @@ public class Blackjack {
         return currPlayer+1;
     }
 
-    public boolean getGameOver() {
-        return currPlayer > numPlayers;
+    public void nextTurn() {
+        if(currPlayer + 1 < numPlayers) {
+            currPlayer++;
+        }
+    }
+
+    public boolean isGameOver() {
+        return currPlayer >= numPlayers;
+    }
+
+    public List<Card> getCards(int player) {
+        List<Card> c = new ArrayList<Card>();
+        for (int i = 0; i < board.length; i++) {
+            if (board[i][player] != null) {
+                c.add(board[i][player]);
+            }
+        }
+        return c;
     }
 
     /**
