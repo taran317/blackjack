@@ -7,7 +7,6 @@ package org.cis120.blackjack;
  */
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 /**
@@ -52,9 +51,25 @@ public class RunBlackjack implements Runnable {
         // define it as an anonymous inner class that is an instance of
         // ActionListener with its actionPerformed() method overridden. When the
         // button is pressed, actionPerformed() will be called.
-        final JButton reset = new JButton("Next Round");
-        reset.addActionListener(e -> board.reset());
-        control_panel.add(reset);
+        final JButton buyIn = new JButton("Buy In 1000");
+        buyIn.addActionListener(e -> board.buyIn());
+        control_panel.add(buyIn);
+
+        final JButton bet100 = new JButton("Bet 100");
+        bet100.addActionListener(e -> board.bet(100));
+        control_panel.add(bet100);
+
+        final JButton bet200 = new JButton("Bet 200");
+        bet200.addActionListener(e -> board.bet(200));
+        control_panel.add(bet200);
+
+        final JButton bet500 = new JButton("Bet 500");
+        bet500.addActionListener(e -> board.bet(500));
+        control_panel.add(bet500);
+
+        final JButton allIn = new JButton("ALL IN");
+        allIn.addActionListener(e -> board.allIn());
+        control_panel.add(allIn);
 
         final JButton hit = new JButton("Hit");
         hit.addActionListener(e -> board.hit());
@@ -63,6 +78,30 @@ public class RunBlackjack implements Runnable {
         final JButton stand = new JButton("Stand");
         stand.addActionListener(e -> board.stand());
         control_panel.add(stand);
+
+        final JButton reset = new JButton("Next Round");
+        reset.addActionListener(e -> board.reset());
+        control_panel.add(reset);
+
+        final JButton one = new JButton("1 Player");
+        one.addActionListener(e -> board.reset(1));
+        control_panel.add(one);
+
+        final JButton two = new JButton("2 Players");
+        two.addActionListener(e -> board.reset(2));
+        control_panel.add(two);
+
+        final JButton three = new JButton("3 Players");
+        three.addActionListener(e -> board.reset(3));
+        control_panel.add(three);
+
+        final JButton four = new JButton("4 Players");
+        four.addActionListener(e -> board.reset(4));
+        control_panel.add(four);
+
+        final JButton five = new JButton("5 Players");
+        five.addActionListener(e -> board.reset(5));
+        control_panel.add(five);
 
         // Put the frame on the screen
         frame.pack();

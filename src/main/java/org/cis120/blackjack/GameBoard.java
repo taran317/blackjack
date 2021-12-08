@@ -56,6 +56,32 @@ public class GameBoard extends JPanel {
         status = statusInit; // initializes the status JLabel
     }
 
+
+    public void bet(int amount) {
+        if(ttt.isBetting()) {
+            ttt.bet(ttt.getCurrentPlayer() - 1, amount);
+            repaint();
+
+            // Makes sure this component has keyboard/mouse focus
+            requestFocusInWindow();
+            updateStatus();
+        }
+    }
+
+    public void allIn() {
+        bet(ttt.getMoney(ttt.getCurrentPlayer()));
+    }
+
+    public void buyIn() {
+        if(ttt.isBetting()) {
+            ttt.buyIn(ttt.getCurrentPlayer());
+            repaint();
+            // Makes sure this component has keyboard/mouse focus
+            requestFocusInWindow();
+            updateStatus();
+        }
+    }
+
     /**
      * (Re-)sets the game to its initial state.
      */
@@ -68,8 +94,17 @@ public class GameBoard extends JPanel {
         requestFocusInWindow();
     }
 
+    public void reset(int n) {
+        ttt.reset(n);
+        status.setText("Player 1's Turn");
+        repaint();
+
+        // Makes sure this component has keyboard/mouse focus
+        requestFocusInWindow();
+    }
+
     public void hit() {
-        if(!ttt.isGameOver()) {
+        if(!ttt.isGameOver() && !ttt.isBetting()) {
             ttt.hit(ttt.getCurrentPlayer());
             repaint();
             updateStatus();
@@ -77,7 +112,7 @@ public class GameBoard extends JPanel {
     }
 
     public void stand() {
-        if(!ttt.isGameOver()) {
+        if(!ttt.isGameOver() && !ttt.isBetting()) {
             ttt.stand();
             repaint();
             updateStatus();
@@ -121,7 +156,12 @@ public class GameBoard extends JPanel {
         for (int player = 1; player <= num; player++) {
             int x = playerWidth / 2 - 85 + playerWidth * (player - 1);
             g.drawString("Player " + player, x, 50);
-            if (player == ttt.getCurrentPlayer() && !ttt.isGameOver()) {
+            if (player == ttt.getCurrentPlayer() && !ttt.isGameOver() && ttt.isBetting()) {
+                g.setColor(Color.ORANGE);
+                g.fillOval(x + 150, 22, 30, 30);
+                g.setColor(Color.BLACK);
+            }
+            if (player == ttt.getCurrentPlayer() && !ttt.isGameOver() && !ttt.isBetting()) {
                 g.setColor(Color.BLUE);
                 g.fillOval(x + 150, 22, 30, 30);
                 g.setColor(Color.BLACK);
@@ -129,24 +169,27 @@ public class GameBoard extends JPanel {
             g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
             int total = ttt.calculateTotal(player);
             if (total > 21) {
-                g.drawString("BUST", x - 64, 150);
+                g.drawString("BUST", x - 44, 150);
             } else if (total == 21 && ttt.getCards(player).size() == 2) {
                 g.setFont(new Font("TimesRoman", Font.BOLD, 20));
                 g.drawString("BLACKJACK", x + 15, 250);
                 g.setColor(getBackground());
                 g.fillOval(x + 150, 22, 30, 30);
                 g.setColor(Color.BLACK);
-                while (ttt.getCurrentPlayer() == player && !ttt.isGameOver()) {
+                while (ttt.getCurrentPlayer() == player && !ttt.isGameOver() && !ttt.isBetting()) {
                     ttt.nextTurn();
                     updateStatus();
                 }
             } else {
                 g.setFont(new Font("TimesRoman", Font.BOLD, 30));
-                g.drawString("" + ttt.calculateTotal(player), x - 50, 150);
+                g.drawString("" + ttt.calculateTotal(player), x - 44, 150);
                 g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
             }
             g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-            g.drawString("Money: " + ttt.getMoney(player), x + 10, 80);
+            g.drawString("Money: " + ttt.getMoney(player), x - 50, 80);
+            if(!ttt.isBetting()) {
+                g.drawString("Bet: " + ttt.getBet(player), x + 120, 80);
+            }
             g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
             g.drawLine(playerWidth * player, 0, playerWidth * player, 500);
             int y = 90;
@@ -160,6 +203,10 @@ public class GameBoard extends JPanel {
                     y += 110;
                 }
                 left = !left;
+            }
+            y -= 110;
+            if(ttt.isBetting()) {
+                paintBackCard(g, x + 95, y);
             }
         }
         int x = 475;
@@ -265,6 +312,20 @@ public class GameBoard extends JPanel {
             System.out.println("Internal Error:" + e.getMessage());
         }
 
+        g.drawImage(img, x, y, width, (int) (726.0 / 500 * width), null);
+    }
+
+    public void paintBackCard(Graphics g, int x, int y) {
+        int width = 60;
+        BufferedImage img = null;
+        String IMG_FILE = "files/back.png";
+        try {
+            if (img == null) {
+                img = ImageIO.read(new File(IMG_FILE));
+            }
+        } catch (IOException e) {
+            System.out.println("Internal Error:" + e.getMessage());
+        }
         g.drawImage(img, x, y, width, (int) (726.0 / 500 * width), null);
     }
 

@@ -37,6 +37,7 @@ public class Blackjack {
     private List<Card> deck;
     private boolean[] bust;
     private boolean dealerBlackjack;
+    private boolean betting;
 
     /**
      * Constructor sets up game state.
@@ -53,6 +54,13 @@ public class Blackjack {
      * reset (re-)sets the game state to start a new game.
      */
     public void reset(int players) {
+        betting = true;
+        if(!(money.length == players)) {
+            money = new int[players];
+            for (int i = 0; i < money.length; i++) {
+                money[i] = 1000;
+            }
+        }
         board = new Card[10][players + 1];
         bets = new int[players];
         bets[0] = 100;
@@ -77,8 +85,15 @@ public class Blackjack {
     }
 
     public void bet(int player, int amount) {
-        bets[player] = amount;
-        money[player] -= amount;
+        if(money[player] >= amount) {
+            bets[player] = amount;
+            money[player] -= amount;
+            currPlayer++;
+        }
+        if(player == numPlayers - 1) {
+            betting = false;
+            currPlayer = 0;
+        }
     }
 
     public int calculateTotal(int player) {
@@ -273,6 +288,10 @@ public class Blackjack {
         return gameOver;
     }
 
+    public boolean isBetting() {
+        return betting;
+    }
+
     public int getMoney(int player) {
         return money[player - 1];
     }
@@ -294,6 +313,14 @@ public class Blackjack {
 
     public boolean isDealerBlackjack() {
         return dealerBlackjack;
+    }
+
+    public int getBet(int player) {
+        return bets[player - 1];
+    }
+
+    public void buyIn(int player) {
+        money[player - 1] += 1000;
     }
 
     /**
