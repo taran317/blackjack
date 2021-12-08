@@ -28,6 +28,6 @@ public enum Ranks {
     }
 
     public int getBjVal() {
-        return val;
+        return bjVal;
     }
 }

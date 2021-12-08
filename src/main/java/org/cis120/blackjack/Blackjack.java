@@ -6,7 +6,9 @@ package org.cis120.blackjack;
  * Created by Bayley Tuch, Sabrina Green, and Nicolas Corona in Fall 2020.
  */
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +29,8 @@ import java.util.List;
  * Run this file to see the main method play a game of Blackjack,
  * visualized with Strings printed to the console.
  */
-public class Blackjack {
+public class Blackjack implements Serializable {
+    static final long serialVersionUID = 6989313146498637283L;
     private Card[][] board;
     private int[] bets;
     private int[] money;
@@ -55,7 +58,7 @@ public class Blackjack {
      */
     public void reset(int players) {
         betting = true;
-        if(!(money.length == players)) {
+        if (!(money.length == players)) {
             money = new int[players];
             for (int i = 0; i < money.length; i++) {
                 money[i] = 1000;
@@ -63,7 +66,6 @@ public class Blackjack {
         }
         board = new Card[10][players + 1];
         bets = new int[players];
-        bets[0] = 100;
         bust = new boolean[players + 1];
         currPlayer = 0;
         numPlayers = players;
@@ -84,13 +86,21 @@ public class Blackjack {
         }
     }
 
+    public void reset() {
+        money = new int[numPlayers];
+        for (int i = 0; i < money.length; i++) {
+            money[i] = 1000;
+        }
+        reset(numPlayers);
+    }
+
     public void bet(int player, int amount) {
-        if(money[player] >= amount) {
+        if (money[player] >= amount) {
             bets[player] = amount;
             money[player] -= amount;
             currPlayer++;
         }
-        if(player == numPlayers - 1) {
+        if (player == numPlayers - 1) {
             betting = false;
             currPlayer = 0;
         }
@@ -167,13 +177,13 @@ public class Blackjack {
     public void printGameState() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                System.out.print(board[i][j]);
+//                System.out.print(board[i][j]);
                 if (j < 2) {
-                    System.out.print(" | ");
+//                    System.out.print(" | ");
                 }
             }
             if (i < 2) {
-                System.out.println("\n---------");
+//                System.out.println("\n---------");
             }
         }
     }
@@ -221,7 +231,7 @@ public class Blackjack {
     public void stand() {
         if (currPlayer == numPlayers) {
             gameOver = true;
-            System.out.println("HEEEEREEEEEEEEEE");
+//            System.out.println("HEEEEREEEEEEEEEE");
             calculateDealerTotal();
             settle();
         }
@@ -246,7 +256,7 @@ public class Blackjack {
             }
         } else {
             for (int player = 0; player < numPlayers; player++) {
-                System.out.println("Player " + (player + 1) + bust[player]);
+//                System.out.println("Player " + (player + 1) + bust[player]);
                 if (isBust(player + 1)) {
                     output[player] = 0;
                 } else if (isBust(0)) {
@@ -258,6 +268,9 @@ public class Blackjack {
                         money[player] += 2 * bets[player];
                         output[player] = 2;
                     } else if (calculateTotal(player + 1) == dealerTotal) {
+//                        System.out.println("WHY IS THIS HAPPENING");
+//                        System.out.println("" + calculateTotal(player + 1));
+//                        System.out.println("" + dealerTotal);
                         money[player] += bets[player];
                         output[player] = 1;
                     }
@@ -274,11 +287,11 @@ public class Blackjack {
 
     public void nextTurn() {
         if (currPlayer + 1 < numPlayers) {
-            System.out.println("curr players " + currPlayer);
-            System.out.println("total # of players " + numPlayers);
+//            System.out.println("curr players " + currPlayer);
+//            System.out.println("total # of players " + numPlayers);
             currPlayer++;
         } else if (!gameOver) {
-            System.out.println("SETTLING");
+//            System.out.println("SETTLING");
             gameOver = true;
             calculateDealerTotal();
         }
@@ -321,6 +334,36 @@ public class Blackjack {
 
     public void buyIn(int player) {
         money[player - 1] += 1000;
+    }
+
+//    public static void writeState(Blackjack g) throws IOException {
+//        ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("bjstate.bin"));
+//        System.out.println("WRITING BJ STATE: " + g.toString());
+//        o.writeObject(g);
+//    }
+//
+//    public static Blackjack readState() throws IOException, ClassNotFoundException {
+//        ObjectInputStream o = new ObjectInputStream(new FileInputStream("bjstate.bin"));
+//
+//        Blackjack g = (Blackjack) o.readObject();
+//        System.out.println("READING BJ STATE: " + g.toString());
+//        return g;
+//    }
+
+    @Override
+    public String toString() {
+        return "Blackjack{" +
+                "board=" + Arrays.toString(board) +
+                ", bets=" + Arrays.toString(bets) +
+                ", money=" + Arrays.toString(money) +
+                ", numPlayers=" + numPlayers +
+                ", currPlayer=" + currPlayer +
+                ", gameOver=" + gameOver +
+                ", deck=" + deck.toString() +
+                ", bust=" + Arrays.toString(bust) +
+                ", dealerBlackjack=" + dealerBlackjack +
+                ", betting=" + betting +
+                '}';
     }
 
     /**
@@ -372,8 +415,8 @@ public class Blackjack {
 
         t.settle();
 
-        System.out.println();
-        System.out.println();
-        System.out.println("Winner is: ");
+//        System.out.println();
+//        System.out.println();
+//        System.out.println("Winner is: ");
     }
 }
