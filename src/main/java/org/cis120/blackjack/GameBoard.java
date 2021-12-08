@@ -167,24 +167,29 @@ public class GameBoard extends JPanel {
                 g.setColor(Color.BLACK);
             }
             g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-            int total = ttt.calculateTotal(player);
-            if (total > 21) {
-                g.drawString("BUST", x - 44, 150);
-            } else if (total == 21 && ttt.getCards(player).size() == 2) {
-                g.setFont(new Font("TimesRoman", Font.BOLD, 20));
-                g.drawString("BLACKJACK", x + 15, 250);
-                g.setColor(getBackground());
-                g.fillOval(x + 150, 22, 30, 30);
-                g.setColor(Color.BLACK);
-                while (ttt.getCurrentPlayer() == player && !ttt.isGameOver() && !ttt.isBetting()) {
-                    ttt.nextTurn();
-                    updateStatus();
+            if(!ttt.isBetting()) {
+                int total = ttt.calculateTotal(player);
+                if (total > 21) {
+                    g.drawString("BUST", x - 44, 150);
+                } else if (total == 21 && ttt.getCards(player).size() == 2) {
+                    g.setFont(new Font("TimesRoman", Font.BOLD, 20));
+                    g.drawString("BLACKJACK", x + 15, 250);
+                    g.setColor(getBackground());
+                    g.fillOval(x + 150, 22, 30, 30);
+                    g.setColor(Color.BLACK);
+                    while (ttt.getCurrentPlayer() == player && !ttt.isGameOver() && !ttt.isBetting()) {
+                        ttt.nextTurn();
+                        updateStatus();
+                    }
+                } else {
+                    g.setFont(new Font("TimesRoman", Font.BOLD, 30));
+                    g.drawString("" + ttt.calculateTotal(player), x - 44, 150);
+                    g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
                 }
             } else {
-                g.setFont(new Font("TimesRoman", Font.BOLD, 30));
-                g.drawString("" + ttt.calculateTotal(player), x - 44, 150);
-                g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-            }
+                int total = ttt.getCards(player).get(0).getRank().getBjVal();
+                printTotal(g, x-44, 150, total);
+                }
             g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
             g.drawString("Money: " + ttt.getMoney(player), x - 50, 80);
             if(!ttt.isBetting()) {
@@ -206,12 +211,15 @@ public class GameBoard extends JPanel {
             }
             y -= 110;
             if(ttt.isBetting()) {
-                paintBackCard(g, x + 95, y);
+                paintBackCard(g, x + 95, y, 60);
             }
         }
         int x = 475;
         int y = 545;
         int y_0 = y + 75;
+        if(!ttt.isGameOver()) {
+            paintBackCard(g, x + 120, y, 100);
+        }
         int total = ttt.calculateTotal(0);
         System.out.println("CURRENT :" + total);
         System.out.println("SIZE :" + ttt.getCards(0).size());
@@ -255,7 +263,7 @@ public class GameBoard extends JPanel {
 
     public void printTotal(Graphics g, int x, int y_0, int total) {
         g.setFont(new Font("TimesRoman", Font.BOLD, 30));
-        g.drawString("" + total, x - 50, y_0);
+        g.drawString("" + total, x, y_0);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
     }
 
@@ -315,8 +323,8 @@ public class GameBoard extends JPanel {
         g.drawImage(img, x, y, width, (int) (726.0 / 500 * width), null);
     }
 
-    public void paintBackCard(Graphics g, int x, int y) {
-        int width = 60;
+    public void paintBackCard(Graphics g, int x, int y, int width) {
+        int w = width;
         BufferedImage img = null;
         String IMG_FILE = "files/back.png";
         try {
@@ -326,7 +334,7 @@ public class GameBoard extends JPanel {
         } catch (IOException e) {
             System.out.println("Internal Error:" + e.getMessage());
         }
-        g.drawImage(img, x, y, width, (int) (726.0 / 500 * width), null);
+        g.drawImage(img, x, y, w, (int) (726.0 / 500 * w), null);
     }
 
 
