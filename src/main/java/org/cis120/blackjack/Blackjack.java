@@ -36,6 +36,7 @@ public class Blackjack {
     private boolean gameOver;
     private List<Card> deck;
     private boolean[] bust;
+    private boolean dealerBlackjack;
 
     /**
      * Constructor sets up game state.
@@ -58,6 +59,7 @@ public class Blackjack {
         bust = new boolean[players + 1];
         currPlayer = 0;
         numPlayers = players;
+        dealerBlackjack = false;
         gameOver = false;
         deck = new ArrayList<>();
         for (Suits s : Suits.values()) {
@@ -137,7 +139,6 @@ public class Blackjack {
     private int calculateDealerTotal() {
         while (calculateTotal(0) <= 16) {
             if (hit(0)) {
-                System.out.println("HERE ASF");
                 break;
             }
         }
@@ -190,8 +191,12 @@ public class Blackjack {
             }
         }
         board[newCardIndex][player] = pop();
-        if (calculateTotal(player) >= 21) {
+        if (calculateTotal(player) > 21) {
             bust(player);
+            nextTurn();
+            return true;
+        }
+        if (calculateTotal(player) == 21) {
             nextTurn();
             return true;
         }
@@ -208,32 +213,45 @@ public class Blackjack {
         nextTurn();
     }
 
-    private void bust(int player) {
+    public void bust(int player) {
         bust[player] = true;
     }
 
     public int[] settle() {
-        System.out.println("IN SETTLE");
-        gameOver = true;
         int[] output = new int[numPlayers];
-        for (int player = 0; player < numPlayers; player++) {
-            if (isBust(0) && !isBust(player)) {
-                money[player] += 2 * bets[player];
-                output[player] = 2;
-            } else {
-                int dealerTotal = calculateDealerTotal();
-                if (calculateTotal(player) > dealerTotal && !isBust(player)) {
-                    money[player] += 2 * bets[player];
-                    output[player] = 2;
-                } else if (calculateTotal(player) == dealerTotal && !isBust(player)) {
+        gameOver = true;
+        if (dealerBlackjack) {
+            for (int player = 0; player < numPlayers; player++) {
+                if (calculateTotal(player + 1) == 21) {
                     money[player] += bets[player];
                     output[player] = 1;
+                } else {
+                    output[player] = 0;
                 }
             }
-            output[player] = 0;
+        } else {
+            for (int player = 0; player < numPlayers; player++) {
+                System.out.println("Player " + (player + 1) + bust[player]);
+                if (isBust(player + 1)) {
+                    output[player] = 0;
+                } else if (isBust(0)) {
+                    money[player] += 2 * bets[player];
+                    output[player] = 2;
+                } else { // player and dealer both did not bust
+                    int dealerTotal = calculateDealerTotal();
+                    if (calculateTotal(player + 1) > dealerTotal) {
+                        money[player] += 2 * bets[player];
+                        output[player] = 2;
+                    } else if (calculateTotal(player + 1) == dealerTotal) {
+                        money[player] += bets[player];
+                        output[player] = 1;
+                    }
+                }
+            }
         }
         return output;
     }
+
 
     public int getCurrentPlayer() {
         return currPlayer + 1;
@@ -267,6 +285,15 @@ public class Blackjack {
             }
         }
         return c;
+    }
+
+    public void dealerBlackjack() {
+        gameOver = true;
+        dealerBlackjack = true;
+    }
+
+    public boolean isDealerBlackjack() {
+        return dealerBlackjack;
     }
 
     /**

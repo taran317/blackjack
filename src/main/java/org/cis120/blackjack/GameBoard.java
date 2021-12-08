@@ -7,7 +7,6 @@ package org.cis120.blackjack;
  */
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +46,7 @@ public class GameBoard extends JPanel {
     public GameBoard(JLabel statusInit) {
         // creates border around the court area, JComponent method
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        setBackground(Color.decode("#ccffcc"));
 
         // Enable keyboard focus on the court area. When this component has the
         // keyboard focus, key events are handled by its key listener.
@@ -69,15 +69,19 @@ public class GameBoard extends JPanel {
     }
 
     public void hit() {
-        ttt.hit(ttt.getCurrentPlayer());
-        repaint();
-        updateStatus();
+        if(!ttt.isGameOver()) {
+            ttt.hit(ttt.getCurrentPlayer());
+            repaint();
+            updateStatus();
+        }
     }
 
     public void stand() {
-        ttt.stand();
-        repaint();
-        updateStatus();
+        if(!ttt.isGameOver()) {
+            ttt.stand();
+            repaint();
+            updateStatus();
+        }
     }
 
     /**
@@ -117,9 +121,9 @@ public class GameBoard extends JPanel {
         for (int player = 1; player <= num; player++) {
             int x = playerWidth / 2 - 85 + playerWidth * (player - 1);
             g.drawString("Player " + player, x, 50);
-            if(player == ttt.getCurrentPlayer() && !ttt.isGameOver()) {
+            if (player == ttt.getCurrentPlayer() && !ttt.isGameOver()) {
                 g.setColor(Color.BLUE);
-                g.fillOval(x+150,22,30,30);
+                g.fillOval(x + 150, 22, 30, 30);
                 g.setColor(Color.BLACK);
             }
             g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
@@ -130,7 +134,7 @@ public class GameBoard extends JPanel {
                 g.setFont(new Font("TimesRoman", Font.BOLD, 20));
                 g.drawString("BLACKJACK", x + 15, 250);
                 g.setColor(getBackground());
-                g.fillOval(x+150,22,30,30);
+                g.fillOval(x + 150, 22, 30, 30);
                 g.setColor(Color.BLACK);
                 while (ttt.getCurrentPlayer() == player && !ttt.isGameOver()) {
                     ttt.nextTurn();
@@ -162,15 +166,8 @@ public class GameBoard extends JPanel {
         int y = 545;
         int y_0 = y + 75;
         int total = ttt.calculateTotal(0);
-        System.out.println("CURRENT :"+total);
-        System.out.println("SIZE :"+ttt.getCards(0).size());
-        if (total > 21) {
-            g.drawString("BUST", x - 64, y_0);
-        } else {
-            g.setFont(new Font("TimesRoman", Font.BOLD, 30));
-            g.drawString("" + ttt.calculateTotal(0), x - 50, y_0);
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-        }
+        System.out.println("CURRENT :" + total);
+        System.out.println("SIZE :" + ttt.getCards(0).size());
         g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
         List<Card> dealerCards = ttt.getCards(0);
         paintDealerCard(g, dealerCards.get(0), x, y);
@@ -178,7 +175,11 @@ public class GameBoard extends JPanel {
         System.out.println("bool 1: " + temp);
         Boolean temp1 = ttt.calculateTotal(0) == 10 || ttt.calculateTotal(0) == 11;
         System.out.println("bool 2: " + temp1);
-        if (dealerCards.size() == 1 &&
+        if (total > 21) {
+            g.drawString("BUST", x - 100, y_0);
+            ttt.bust(0);
+        }
+        else if (dealerCards.size() == 1 &&
                 (ttt.calculateTotal(0) == 10 || ttt.calculateTotal(0) == 11)) {
             ttt.hit(0);
             System.out.println("card 1: " + ttt.getCards(0).get(0).toString());
@@ -187,16 +188,28 @@ public class GameBoard extends JPanel {
             if (ttt.calculateTotal(0) == 21) {
                 System.out.println("card 1: " + ttt.getCards(0).get(0).toString());
                 System.out.println("card 2: " + ttt.getCards(0).get(1).toString());
-                if (total == 21 && ttt.getCards(0).size() == 2) {
+                if (ttt.calculateTotal(0) == 21 && ttt.getCards(0).size() == 2) {
                     g.setFont(new Font("TimesRoman", Font.BOLD, 20));
-                    g.drawString("BLACKJACK", x - 50, y_0);
+                    g.drawString("BLACKJACK", x - 150, y_0);
+                    ttt.dealerBlackjack();
                 }
                 int secondCardXCoor = x + 120;
                 paintDealerCard(g, ttt.getCards(0).get(1), secondCardXCoor, y);
                 updateStatus();
             }
+            else {
+                printTotal(g, x-50, y_0, total);
+            }
+        } else {
+            printTotal(g, x-50, y_0, ttt.calculateTotal(0));
         }
         gameOverActions(g, x, y, playerWidth);
+    }
+
+    public void printTotal(Graphics g, int x, int y_0, int total) {
+        g.setFont(new Font("TimesRoman", Font.BOLD, 30));
+        g.drawString("" + total, x - 50, y_0);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
     }
 
     public void gameOverActions(Graphics g, int x, int y, int playerWidth) {
@@ -208,7 +221,7 @@ public class GameBoard extends JPanel {
                 x += 120;
             }
             int[] outcome = ttt.settle();
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            g.setFont(new Font("TimesRoman", Font.BOLD, 40));
             System.out.println("Outcome: " + outcome);
             for (int player = 0; player < ttt.getNumPlayers(); player++) {
                 int w = playerWidth / 2 - 65 + playerWidth * player;
@@ -223,17 +236,18 @@ public class GameBoard extends JPanel {
                         g.drawString("Push (tie)", w, 470);
                         break;
                     case 2:
-                        g.setColor(Color.GREEN);
+                        g.setColor(Color.decode("#004d00"));
                         g.drawString("Win!", w, 470);
                         break;
                 }
             }
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
         }
         System.out.println("Is game over? " + ttt.isGameOver());
     }
 
     public void paintPlayerCard(Graphics g, Card c, int x, int y) {
-        paintCard(g, c, x, y, 60);
+        paintCard(g, c, x + 15, y, 60);
     }
 
     public void paintDealerCard(Graphics g, Card c, int x, int y) {
