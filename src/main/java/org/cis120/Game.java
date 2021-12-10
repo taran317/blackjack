@@ -10,7 +10,7 @@ public class Game {
      */
     public static void main(String[] args) {
         Runnable game = new org.cis120.blackjack.RunBlackjack(); // Set the game you want to run
-                                                                     // here
+                                                                 // here
         SwingUtilities.invokeLater(game);
     }
 }

@@ -12,13 +12,11 @@ public class Card implements Serializable {
         this.rank = rank;
     }
 
-    public Ranks getRank()
-    {
+    public Ranks getRank() {
         return rank;
     }
 
-    public Suits getSuit()
-    {
+    public Suits getSuit() {
         return suit;
     }
 

@@ -40,6 +40,35 @@ public class RunBlackjack implements Runnable {
         final JLabel status = new JLabel("");
         status_panel.add(status);
 
+        String instructions = "This is blackjack!\n" +
+                "\n" +
+                "- The goal of blackjack is to beat the dealer's hand without going over 21.\n" +
+                "- Face cards are worth 10. Aces are worth 1 or 11, whichever makes a " +
+                "better hand.\n"
+                +
+                "- Each player starts with two cards, one of the dealer's cards is hidden until " +
+                "the end.\n"
+                +
+                "- To 'Hit' is to ask for another card. To 'Stand' is to hold your total and " +
+                "end your turn.\n"
+                +
+                "- If you go over 21 you bust, and the dealer wins regardless of the " +
+                "dealer's hand.\n"
+                +
+                "- If you are dealt 21 from the start (Ace & 10), you got a blackjack " +
+                "(which means you can’t lose!).\n"
+                +
+                "- Dealer will hit until cards total 17 or higher.\n" +
+                " \n" +
+                "Buttons:\n" +
+                "Buy In 1000: add 1000 to your money.\n" +
+                "All in: bet all of your money in the round!\n" +
+                "Next round: move on to the next round (keeping your money).\n" +
+                "X players: choose to play with X players.\n" +
+                "Reset: start over and reset all money.\n" +
+                "\n" +
+                "Thank you for playing!\n";
+        JOptionPane.showMessageDialog(null, instructions);
         // Game board
         GameBoard board = null;
         try {
@@ -50,15 +79,21 @@ public class RunBlackjack implements Runnable {
         assert board != null;
         frame.add(board, BorderLayout.CENTER);
         // Reset button
+
         final JPanel control_panel = new JPanel();
         frame.add(control_panel, BorderLayout.NORTH);
+
+        final JPanel panel_2 = new JPanel();
+        // frame.add(panel_2, BorderLayout.NORTH);
 
         // Note here that when we add an action listener to the reset button, we
         // define it as an anonymous inner class that is an instance of
         // ActionListener with its actionPerformed() method overridden. When the
         // button is pressed, actionPerformed() will be called.
-        final JButton buyIn = new JButton("Buy In 1000");
+        // final JButton instructions = new JButton("Help");
         GameBoard finalBoard = board;
+
+        final JButton buyIn = new JButton("Buy In 1000");
         buyIn.addActionListener(e -> finalBoard.buyIn());
         control_panel.add(buyIn);
 
@@ -87,7 +122,7 @@ public class RunBlackjack implements Runnable {
         control_panel.add(stand);
 
         final JButton next_round = new JButton("Next Round");
-        next_round.addActionListener(e -> finalBoard.next_round());
+        next_round.addActionListener(e -> finalBoard.nextRound());
         control_panel.add(next_round);
 
         final JButton one = new JButton("1 Player");
@@ -110,7 +145,7 @@ public class RunBlackjack implements Runnable {
         five.addActionListener(e -> finalBoard.reset(5));
         control_panel.add(five);
 
-        final JButton reset_game = new JButton("Reset Game");
+        final JButton reset_game = new JButton("Reset");
         reset_game.addActionListener(e -> finalBoard.reset());
         control_panel.add(reset_game);
 
@@ -118,7 +153,5 @@ public class RunBlackjack implements Runnable {
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        // Start the game
-//        board.reset();
     }
 }

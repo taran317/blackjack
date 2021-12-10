@@ -146,6 +146,8 @@ public class Blackjack implements Serializable {
                         total += 1;
                         aces++;
                         break;
+                    default:
+                        break;
                 }
             }
         }
@@ -161,31 +163,16 @@ public class Blackjack implements Serializable {
         return bust[player];
     }
 
-    private int calculateDealerTotal() {
+    public int calculateDealerTotal() {
         while (calculateTotal(0) <= 16) {
             if (hit(0)) {
                 break;
             }
         }
-        return calculateTotal(0);
-    }
-
-    /**
-     * printGameState prints the current game state
-     * for debugging.
-     */
-    public void printGameState() {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-//                System.out.print(board[i][j]);
-                if (j < 2) {
-//                    System.out.print(" | ");
-                }
-            }
-            if (i < 2) {
-//                System.out.println("\n---------");
-            }
+        if (calculateTotal(0) == 21) {
+            dealerBlackjack();
         }
+        return calculateTotal(0);
     }
 
     private Card pop() {
@@ -231,7 +218,7 @@ public class Blackjack implements Serializable {
     public void stand() {
         if (currPlayer == numPlayers) {
             gameOver = true;
-//            System.out.println("HEEEEREEEEEEEEEE");
+            // System.out.println("HEEEEREEEEEEEEEE");
             calculateDealerTotal();
             settle();
         }
@@ -256,7 +243,7 @@ public class Blackjack implements Serializable {
             }
         } else {
             for (int player = 0; player < numPlayers; player++) {
-//                System.out.println("Player " + (player + 1) + bust[player]);
+                // System.out.println("Player " + (player + 1) + bust[player]);
                 if (isBust(player + 1)) {
                     output[player] = 0;
                 } else if (isBust(0)) {
@@ -268,9 +255,9 @@ public class Blackjack implements Serializable {
                         money[player] += 2 * bets[player];
                         output[player] = 2;
                     } else if (calculateTotal(player + 1) == dealerTotal) {
-//                        System.out.println("WHY IS THIS HAPPENING");
-//                        System.out.println("" + calculateTotal(player + 1));
-//                        System.out.println("" + dealerTotal);
+                        // System.out.println("WHY IS THIS HAPPENING");
+                        // System.out.println("" + calculateTotal(player + 1));
+                        // System.out.println("" + dealerTotal);
                         money[player] += bets[player];
                         output[player] = 1;
                     }
@@ -280,18 +267,17 @@ public class Blackjack implements Serializable {
         return output;
     }
 
-
     public int getCurrentPlayer() {
         return currPlayer + 1;
     }
 
     public void nextTurn() {
         if (currPlayer + 1 < numPlayers) {
-//            System.out.println("curr players " + currPlayer);
-//            System.out.println("total # of players " + numPlayers);
+            // System.out.println("curr players " + currPlayer);
+            // System.out.println("total # of players " + numPlayers);
             currPlayer++;
         } else if (!gameOver) {
-//            System.out.println("SETTLING");
+            // System.out.println("SETTLING");
             gameOver = true;
             calculateDealerTotal();
         }
@@ -336,20 +322,6 @@ public class Blackjack implements Serializable {
         money[player - 1] += 1000;
     }
 
-//    public static void writeState(Blackjack g) throws IOException {
-//        ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("bjstate.bin"));
-//        System.out.println("WRITING BJ STATE: " + g.toString());
-//        o.writeObject(g);
-//    }
-//
-//    public static Blackjack readState() throws IOException, ClassNotFoundException {
-//        ObjectInputStream o = new ObjectInputStream(new FileInputStream("bjstate.bin"));
-//
-//        Blackjack g = (Blackjack) o.readObject();
-//        System.out.println("READING BJ STATE: " + g.toString());
-//        return g;
-//    }
-
     @Override
     public String toString() {
         return "Blackjack{" +
@@ -366,6 +338,29 @@ public class Blackjack implements Serializable {
                 '}';
     }
 
+    public Blackjack(int players, Card[][] board, ArrayList<Card> l) { // another constructor for
+                                                                       // testing
+        money = new int[players];
+        for (int i = 0; i < money.length; i++) {
+            money[i] = 1000;
+        }
+        this.board = board;
+        betting = true;
+        if (!(money.length == players)) {
+            money = new int[players];
+            for (int i = 0; i < money.length; i++) {
+                money[i] = 1000;
+            }
+        }
+        bets = new int[players];
+        bust = new boolean[players + 1];
+        currPlayer = 0;
+        numPlayers = players;
+        dealerBlackjack = false;
+        gameOver = false;
+        deck = l;
+    }
+
     /**
      * This main method illustrates how the model is completely independent of
      * the view and controller. We can play the game from start to finish
@@ -378,11 +373,11 @@ public class Blackjack implements Serializable {
      */
     public static void main(String[] args) {
         Blackjack t = new Blackjack(5);
-        t.bet(1, 100);
-        t.bet(2, 200);
-        t.bet(3, 50);
+        t.bet(0, 100);
+        t.bet(1, 200);
+        t.bet(2, 50);
+        t.bet(3, 100);
         t.bet(4, 100);
-        t.bet(5, 100);
         for (int i = 0; i < 2; i++) {
             if (t.hit(1)) {
                 break;
@@ -414,9 +409,5 @@ public class Blackjack implements Serializable {
         }
 
         t.settle();
-
-//        System.out.println();
-//        System.out.println();
-//        System.out.println("Winner is: ");
     }
 }
