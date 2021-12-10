@@ -307,10 +307,9 @@ public class GameTest {
         t.hit(1);
 
         assertEquals(12, t.calculateTotal(1));
-        assertEquals(1, t.getCurrentPlayer());
-
+        assertEquals(6, t.getCurrentPlayer());
         t.stand();
-        assertEquals(2, t.getCurrentPlayer());
+        assertEquals(6, t.getCurrentPlayer());
     }
 
     @Test

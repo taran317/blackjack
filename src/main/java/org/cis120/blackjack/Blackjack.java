@@ -64,7 +64,7 @@ public class Blackjack implements Serializable {
                 money[i] = 1000;
             }
         }
-        board = new Card[10][players + 1];
+        board = new Card[11][players + 1];
         bets = new int[players];
         bust = new boolean[players + 1];
         currPlayer = 0;
