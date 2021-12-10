@@ -100,7 +100,7 @@ public class Blackjack implements Serializable {
             money[player] -= amount;
             currPlayer++;
         }
-        if (player == numPlayers - 1) {
+        if (money[player] >= amount && player == numPlayers - 1) {
             betting = false;
             currPlayer = 0;
         }

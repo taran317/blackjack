@@ -11,9 +11,9 @@ PennKey: _______
   is an appropriate use of the concept. Incorporate the feedback you got after
   submitting your proposal.
 
-  1.
+  1.2D Arrays
 
-  2.
+  2. 
 
   3.
 
@@ -42,3 +42,6 @@ PennKey: _______
 
 - Cite any external resources (images, tutorials, etc.) that you may have used 
   while implementing your game.
+
+Thanks to Google Code's vector-playing-cards for high resolution .PNG card images.
+Thanks to hitorstand.net (http://www.hitorstand.net/strategy.php) for blackjack rules.

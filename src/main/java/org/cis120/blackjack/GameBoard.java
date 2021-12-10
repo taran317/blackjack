@@ -52,11 +52,6 @@ public class GameBoard extends JPanel implements Serializable {
         // keyboard focus, key events are handled by its key listener.
         setFocusable(true);
         ttt = new Blackjack(4); // initializes model for the game
-        // try {
-        // ttt = Blackjack.readState();
-        // } catch (IOException | ClassNotFoundException e) {
-        // e.printStackTrace();
-        // }
         status = statusInit; // initializes the status JLabel
     }
 
@@ -135,7 +130,6 @@ public class GameBoard extends JPanel implements Serializable {
      * Updates the JLabel to reflect the current state of the game.
      */
     private void updateStatus() {
-        // System.out.println("STATUS UPDATE");
         if (!ttt.isGameOver()) {
             status.setText("Player " + ttt.getCurrentPlayer() + "'s Turn");
         } else {
@@ -277,8 +271,9 @@ public class GameBoard extends JPanel implements Serializable {
         try {
             writeState(this);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Internal Error: " + e.getMessage());
         }
+        updateStatus();
     }
 
     public void printTotal(Graphics g, int x, int y, int total) {
@@ -341,8 +336,14 @@ public class GameBoard extends JPanel implements Serializable {
             if (img == null) {
                 img = ImageIO.read(new File(imgFile));
             }
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Make sure file is in directory!"
+            );
+            System.exit(0);
         } catch (IOException e) {
-            // System.out.println("Internal Error:" + e.getMessage());
+            System.out.println("Internal Error:" + e.getMessage());
         }
 
         g.drawImage(img, x, y, width, (int) (726.0 / 500 * width), null);
@@ -353,11 +354,15 @@ public class GameBoard extends JPanel implements Serializable {
         BufferedImage img = null;
         String imgFile = "files/back.png";
         try {
-            if (img == null) {
-                img = ImageIO.read(new File(imgFile));
-            }
+            img = ImageIO.read(new File(imgFile));
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Make sure file is in directory!"
+            );
+            System.exit(0);
         } catch (IOException e) {
-            // System.out.println("Internal Error:" + e.getMessage());
+            System.out.println("Internal Error: " + e.getMessage());
         }
         g.drawImage(img, x, y, w, (int) (726.0 / 500 * w), null);
     }
@@ -371,6 +376,10 @@ public class GameBoard extends JPanel implements Serializable {
     public static void writeState(GameBoard g) throws IOException {
         ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("state.bin"));
         o.writeObject(g);
+    }
+
+    public void setStatus(JLabel status) {
+        this.status = status;
     }
 
     @Override

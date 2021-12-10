@@ -7,6 +7,7 @@ package org.cis120.blackjack;
  */
 
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.swing.*;
 
@@ -37,7 +38,7 @@ public class RunBlackjack implements Runnable {
         // Status panel
         final JPanel status_panel = new JPanel();
         frame.add(status_panel, BorderLayout.SOUTH);
-        final JLabel status = new JLabel("");
+        final JLabel status = new JLabel("Setting up...");
         status_panel.add(status);
 
         String instructions = "This is blackjack!\n" +
@@ -73,18 +74,35 @@ public class RunBlackjack implements Runnable {
         GameBoard board = null;
         try {
             board = GameBoard.readState();
+            final JPanel status_panelN = new JPanel();
+            frame.add(status_panelN, BorderLayout.SOUTH);
+            final JLabel statusN = new JLabel("Setting up...");
+            status_panelN.add(statusN);
+            board.setStatus(statusN);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "File is not in directory. Resetting game!"
+            );
+            board = new GameBoard(status);
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Internal Error:" + e.getMessage());
         }
         assert board != null;
-        frame.add(board, BorderLayout.CENTER);
+        try {
+            frame.add(board, BorderLayout.CENTER);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "File is corrupted. Resetting game!"
+            );
+            board = new GameBoard(status);
+            frame.add(board, BorderLayout.CENTER);
+        }
         // Reset button
 
         final JPanel control_panel = new JPanel();
         frame.add(control_panel, BorderLayout.NORTH);
-
-        final JPanel panel_2 = new JPanel();
-        // frame.add(panel_2, BorderLayout.NORTH);
 
         // Note here that when we add an action listener to the reset button, we
         // define it as an anonymous inner class that is an instance of
