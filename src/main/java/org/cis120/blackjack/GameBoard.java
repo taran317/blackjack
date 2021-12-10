@@ -149,7 +149,6 @@ public class GameBoard extends JPanel implements Serializable {
      */
     @Override
     public void paintComponent(Graphics g) {
-        // System.out.println("NEW CYCLE");
         super.paintComponent(g);
         g.setFont(new Font("TimesRoman", Font.PLAIN, 40));
         g.setColor(Color.BLACK);
@@ -158,7 +157,6 @@ public class GameBoard extends JPanel implements Serializable {
         g.drawLine(0, 500, BOARD_WIDTH, 500);
         int num = ttt.getNumPlayers();
         int playerWidth = BOARD_WIDTH / num;
-        // System.out.println("dealer's total: " + ttt.calculateTotal(0));
         for (int player = 1; player <= num; player++) {
             int x = playerWidth / 2 - 85 + playerWidth * (player - 1);
             g.drawString("Player " + player, x, 50);

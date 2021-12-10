@@ -95,14 +95,16 @@ public class Blackjack implements Serializable {
     }
 
     public void bet(int player, int amount) {
-        if (money[player] >= amount) {
+        if (money[player] >= amount && player == numPlayers - 1) {
+            bets[player] = amount;
+            money[player] -= amount;
+            betting = false;
+            currPlayer = 0;
+        }
+        else if (money[player] >= amount) {
             bets[player] = amount;
             money[player] -= amount;
             currPlayer++;
-        }
-        if (money[player] >= amount && player == numPlayers - 1) {
-            betting = false;
-            currPlayer = 0;
         }
     }
 
@@ -218,7 +220,6 @@ public class Blackjack implements Serializable {
     public void stand() {
         if (currPlayer == numPlayers) {
             gameOver = true;
-            // System.out.println("HEEEEREEEEEEEEEE");
             calculateDealerTotal();
             settle();
         }
@@ -255,9 +256,6 @@ public class Blackjack implements Serializable {
                         money[player] += 2 * bets[player];
                         output[player] = 2;
                     } else if (calculateTotal(player + 1) == dealerTotal) {
-                        // System.out.println("WHY IS THIS HAPPENING");
-                        // System.out.println("" + calculateTotal(player + 1));
-                        // System.out.println("" + dealerTotal);
                         money[player] += bets[player];
                         output[player] = 1;
                     }
@@ -273,11 +271,8 @@ public class Blackjack implements Serializable {
 
     public void nextTurn() {
         if (currPlayer + 1 < numPlayers) {
-            // System.out.println("curr players " + currPlayer);
-            // System.out.println("total # of players " + numPlayers);
             currPlayer++;
         } else if (!gameOver) {
-            // System.out.println("SETTLING");
             gameOver = true;
             calculateDealerTotal();
         }
